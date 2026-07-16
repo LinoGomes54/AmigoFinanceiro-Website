@@ -236,7 +236,9 @@ export function Login() {
             </Link>
           </p>
 
-          <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+          {/* noValidate: a validação nativa do browser bloquearia o submit e substituiria
+              as mensagens de erro do layout pelas bolhas padrão. */}
+          <form onSubmit={onSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
             <LabeledField
               label="Email"
               name="email"
