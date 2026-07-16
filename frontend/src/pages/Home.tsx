@@ -12,9 +12,10 @@ import { SiteFooter } from '../components/Footer.tsx';
 import { Lightbox } from '../components/Lightbox.tsx';
 import { Logo } from '../components/Logo.tsx';
 import { Planos, type PlanosMode } from '../components/Planos.tsx';
+import { ThemeToggle } from '../components/ThemeToggle.tsx';
 import { useAuth } from '../context/AuthContext.tsx';
+import { useTheme } from '../context/ThemeContext.tsx';
 import { useScrolled } from '../hooks/useScrolled.ts';
-import { useTheme } from '../hooks/useTheme.ts';
 
 const DESTAQUES = [
   ['100% manual', 'Você decide o que entra. Zero conexão com banco.'],
@@ -22,10 +23,14 @@ const DESTAQUES = [
   ['Windows', 'App desktop nativo para Windows 10 e 11.'],
 ];
 
-const CARDS_RECURSOS: Array<[icone: string, fundo: string, titulo: string, texto: string, img: string]> = [
+/** Cada tile tem o pastel do tema claro e o equivalente escurecido para o tema escuro. */
+const CARDS_RECURSOS: Array<
+  [icone: string, fundoClaro: string, fundoEscuro: string, titulo: string, texto: string, img: string]
+> = [
   [
     '💳',
     '#fdf2e2',
+    '#3a2e18',
     'Cartões',
     'Limite, fechamento, vencimento e faturas de cada cartão em um painel só.',
     telaCartoes,
@@ -33,6 +38,7 @@ const CARDS_RECURSOS: Array<[icone: string, fundo: string, titulo: string, texto
   [
     '🔁',
     '#e7f3ff',
+    '#14304f',
     'Recorrências',
     'Salário e assinaturas viram lançamentos automáticos, com previsão dos meses seguintes.',
     telaRecorrencias,
@@ -40,6 +46,7 @@ const CARDS_RECURSOS: Array<[icone: string, fundo: string, titulo: string, texto
   [
     '🏷️',
     '#f0ebfa',
+    '#2b2440',
     'Categorias',
     'Personalizáveis, com cor e ícone próprios — do jeito que faz sentido pra você.',
     telaCategorias,
@@ -47,6 +54,7 @@ const CARDS_RECURSOS: Array<[icone: string, fundo: string, titulo: string, texto
   [
     '🎨',
     '#e8f1fe',
+    '#16294a',
     'Personalização',
     'Temas claro, escuro e gradiente, cores e fontes ajustáveis com prévia ao vivo.',
     telaConfig,
@@ -129,16 +137,7 @@ export function Home() {
               Perguntas
             </a>
           </div>
-          <button type="button" onClick={toggleTheme} className="af-switch" aria-label="Alternar modo claro/escuro">
-            <span className="af-switch-thumb">
-              <span
-                className="af-switch-icon"
-                style={{ display: 'inline-block', transform: isDark ? 'rotate(0deg)' : 'rotate(-20deg)' }}
-              >
-                {isDark ? '🌙' : '☀️'}
-              </span>
-            </span>
-          </button>
+          <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
           {user ? (
             <span style={{ color: 'var(--af-text)', fontWeight: 700, fontSize: 15, padding: '9px 8px' }}>
               Olá, {user.nome.split(' ')[0]}
@@ -171,16 +170,11 @@ export function Home() {
       </header>
 
       <section id="top" style={{ position: 'relative', padding: '84px 24px 40px' }}>
-        <div
-          aria-hidden="true"
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background:
-              'radial-gradient(900px 400px at 80% -50px, #dbe9ff 0%, rgba(214,245,238,0) 60%), radial-gradient(700px 380px at 5% 0%, #e7f3ff 0%, rgba(231,243,255,0) 55%)',
-            pointerEvents: 'none',
-          }}
-        />
+        <div className="af-hero-bg" aria-hidden="true">
+          <span className="af-blob af-blob-1" />
+          <span className="af-blob af-blob-2" />
+          <span className="af-blob af-blob-3" />
+        </div>
         <div
           style={{
             position: 'relative',
@@ -280,15 +274,16 @@ export function Home() {
             </p>
           </div>
           <div style={{ position: 'relative' }}>
+            {/* Fica embaixo à esquerda: no topo à direita cobriria os controles da janela. */}
             <div
               style={{
                 position: 'absolute',
-                top: -18,
-                right: -8,
-                background: '#fff',
-                border: '1px solid #e2e9f2',
+                bottom: -20,
+                left: -14,
+                background: 'var(--af-win-bg)',
+                border: '1px solid var(--af-win-border)',
                 borderRadius: 12,
-                boxShadow: '0 18px 40px -20px rgba(8,49,47,0.4)',
+                boxShadow: '0 18px 40px -20px var(--af-win-shadow)',
                 padding: '10px 14px',
                 zIndex: 2,
                 display: 'flex',
@@ -301,7 +296,7 @@ export function Home() {
                   width: 30,
                   height: 30,
                   borderRadius: 8,
-                  background: '#e8f1fe',
+                  background: isDark ? '#1a2c4d' : '#e8f1fe',
                   display: 'grid',
                   placeItems: 'center',
                   fontSize: 16,
@@ -310,8 +305,15 @@ export function Home() {
                 💳
               </span>
               <div>
-                <div style={{ fontSize: 10, color: '#7c8aa0', fontWeight: 600 }}>Fatura Inter</div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#0b1f3a', fontFamily: "'Space Grotesk'" }}>
+                <div style={{ fontSize: 10, color: 'var(--af-win-title)', fontWeight: 600 }}>Fatura Inter</div>
+                <div
+                  style={{
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: 'var(--af-text)',
+                    fontFamily: "'Space Grotesk'",
+                  }}
+                >
                   vence dia 6
                 </div>
               </div>
@@ -473,7 +475,7 @@ export function Home() {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px 32px', marginTop: 88 }} data-feat-cards>
-          {CARDS_RECURSOS.map(([icone, fundo, titulo, texto, img]) => (
+          {CARDS_RECURSOS.map(([icone, fundoClaro, fundoEscuro, titulo, texto, img]) => (
             <div key={titulo}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div
@@ -481,7 +483,7 @@ export function Home() {
                     width: 42,
                     height: 42,
                     borderRadius: 11,
-                    background: fundo,
+                    background: isDark ? fundoEscuro : fundoClaro,
                     display: 'grid',
                     placeItems: 'center',
                     fontSize: 20,
