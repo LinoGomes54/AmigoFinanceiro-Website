@@ -11,13 +11,13 @@ function StatCard({ label, valor, cor }: { label: string; valor: string; cor: st
     <div
       style={{
         flex: 1,
-        background: '#f7faff',
-        border: '1px solid #eef2f8',
+        background: 'var(--af-bg)',
+        border: '1px solid var(--af-win-border)',
         borderRadius: 10,
         padding: '12px 14px',
       }}
     >
-      <div style={{ fontSize: 11, color: '#7c8aa0', fontWeight: 600 }}>{label}</div>
+      <div style={{ fontSize: 11, color: 'var(--af-win-title)', fontWeight: 600 }}>{label}</div>
       <div style={{ fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: 20, color: cor, marginTop: 3 }}>
         {valor}
       </div>
@@ -32,10 +32,10 @@ function AppMock() {
         <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
           <StatCard label="Entradas" valor="R$ 8.400" cor="#1666d6" />
           <StatCard label="Saídas" valor="R$ 5.180" cor="#d1495b" />
-          <StatCard label="Saldo" valor="R$ 3.220" cor="#0b1f3a" />
+          <StatCard label="Saldo" valor="R$ 3.220" cor="var(--af-text)" />
         </div>
-        <div style={{ border: '1px solid #eef2f8', borderRadius: 10, padding: 12 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#0b1f3a' }}>Evolução anual por cartão</div>
+        <div style={{ border: '1px solid var(--af-win-border)', borderRadius: 10, padding: 12 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--af-text)' }}>Evolução anual por cartão</div>
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 96, marginTop: 10 }}>
             {BAR_HEIGHTS.map((h, i) => (
               <div
@@ -84,7 +84,7 @@ const NOVIDADES = [
   ['+', '#1666d6', 'Parcelamento automático de compras no crédito.'],
   ['+', '#1666d6', 'Tema gradiente e prévia de cores ao vivo.'],
   ['+', '#1666d6', 'Previsão de recorrências nos meses futuros.'],
-  ['~', '#7c8aa0', 'Melhorias de desempenho no dashboard anual.'],
+  ['~', 'var(--af-muted-3)', 'Melhorias de desempenho no dashboard anual.'],
 ];
 
 export function Download() {
@@ -92,8 +92,8 @@ export function Download() {
     <div
       style={{
         fontFamily: "'Manrope', system-ui, sans-serif",
-        color: '#0b1f3a',
-        background: '#f5f8fd',
+        color: 'var(--af-text)',
+        background: 'var(--af-bg)',
         overflowX: 'hidden',
         lineHeight: 1.5,
       }}
@@ -103,9 +103,10 @@ export function Download() {
           position: 'sticky',
           top: 0,
           zIndex: 50,
-          background: 'rgba(245,248,253,0.9)',
+          background: 'rgba(var(--af-bg-rgb), 0.9)',
           backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid #e2e9f2',
+          WebkitBackdropFilter: 'blur(12px)',
+          borderBottom: '1px solid var(--af-border)',
         }}
       >
         <nav
@@ -118,20 +119,20 @@ export function Download() {
             gap: 20,
           }}
         >
-          <Logo color="#0b1f3a" />
+          <Logo />
           <div style={{ flex: 1 }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 28 }} data-navlinks>
-            <Link to="/#recursos" style={{ color: '#3c4b63', fontWeight: 600, fontSize: 15 }}>
+            <Link to="/#recursos" style={{ color: 'var(--af-nav)', fontWeight: 600, fontSize: 15 }}>
               Funcionalidades
             </Link>
-            <Link to="/#planos" style={{ color: '#3c4b63', fontWeight: 600, fontSize: 15 }}>
+            <Link to="/#planos" style={{ color: 'var(--af-nav)', fontWeight: 600, fontSize: 15 }}>
               Planos
             </Link>
-            <Link to="/#faq" style={{ color: '#3c4b63', fontWeight: 600, fontSize: 15 }}>
+            <Link to="/#faq" style={{ color: 'var(--af-nav)', fontWeight: 600, fontSize: 15 }}>
               Perguntas
             </Link>
           </div>
-          <Link to="/login" style={{ color: '#0b1f3a', fontWeight: 700, fontSize: 15, padding: '9px 8px' }}>
+          <Link to="/login" style={{ color: 'var(--af-text)', fontWeight: 700, fontSize: 15, padding: '9px 8px' }}>
             Entrar
           </Link>
         </nav>
@@ -140,12 +141,7 @@ export function Download() {
       <section style={{ position: 'relative', padding: '72px 24px 40px' }}>
         <div
           aria-hidden="true"
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'radial-gradient(900px 420px at 50% -60px, #dbe9ff 0%, rgba(219,233,255,0) 62%)',
-            pointerEvents: 'none',
-          }}
+          style={{ position: 'absolute', inset: 0, background: 'var(--af-glow)', pointerEvents: 'none' }}
         />
         <div
           style={{
@@ -191,7 +187,15 @@ export function Download() {
             >
               Baixe o Amigo Financeiro
             </h1>
-            <p style={{ fontSize: 18, color: '#47586f', margin: '16px 0 0', maxWidth: 480, textWrap: 'pretty' }}>
+            <p
+              style={{
+                fontSize: 18,
+                color: 'var(--af-muted-1)',
+                margin: '16px 0 0',
+                maxWidth: 480,
+                textWrap: 'pretty',
+              }}
+            >
               Grátis, sem cadastro e sem conectar o banco. Instale em segundos e comece a organizar o seu mês.
             </p>
 
@@ -226,7 +230,7 @@ export function Download() {
                   flexWrap: 'wrap',
                   gap: '8px 20px',
                   marginTop: 16,
-                  color: '#7c8aa0',
+                  color: 'var(--af-muted-3)',
                   fontSize: 13.5,
                   fontWeight: 600,
                 }}
@@ -244,7 +248,7 @@ export function Download() {
             <p
               style={{
                 fontSize: 13,
-                color: '#7c8aa0',
+                color: 'var(--af-muted-3)',
                 marginTop: 18,
                 display: 'flex',
                 alignItems: 'center',
@@ -272,7 +276,7 @@ export function Download() {
             fontWeight: 700,
             letterSpacing: '0.06em',
             textTransform: 'uppercase',
-            color: '#7c8aa0',
+            color: 'var(--af-muted-3)',
             marginBottom: 14,
           }}
         >
@@ -281,7 +285,7 @@ export function Download() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr' }} data-alts>
           <div
             style={{
-              background: '#fff',
+              background: 'var(--af-surface)',
               border: '2px solid #1666d6',
               borderRadius: 16,
               padding: 20,
@@ -295,7 +299,7 @@ export function Download() {
               <div style={{ fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: 17 }}>
                 Windows 10 e 11 (64-bit)
               </div>
-              <div style={{ fontSize: 13, color: '#5a6a82' }}>
+              <div style={{ fontSize: 13, color: 'var(--af-muted-2)' }}>
                 {release.version} · {release.fileSize} · Instalador .exe
               </div>
             </div>
@@ -320,19 +324,27 @@ export function Download() {
         <h2 style={{ fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: 30, letterSpacing: '-0.02em', margin: 0 }}>
           Como instalar
         </h2>
-        <p style={{ fontSize: 16, color: '#47586f', margin: '10px 0 28px' }}>
+        <p style={{ fontSize: 16, color: 'var(--af-muted-1)', margin: '10px 0 28px' }}>
           Três passos e você já está registrando o primeiro lançamento.
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }} data-steps>
           {PASSOS.map(([n, titulo, texto]) => (
-            <div key={n} style={{ background: '#fff', border: '1px solid #e6ecf5', borderRadius: 16, padding: 26 }}>
+            <div
+              key={n}
+              style={{
+                background: 'var(--af-surface)',
+                border: '1px solid var(--af-border)',
+                borderRadius: 16,
+                padding: 26,
+              }}
+            >
               <div
                 style={{
                   width: 38,
                   height: 38,
                   borderRadius: 10,
-                  background: '#e8f1fe',
-                  color: '#1666d6',
+                  background: 'var(--af-tile-bg)',
+                  color: 'var(--af-tile-color)',
                   display: 'grid',
                   placeItems: 'center',
                   fontFamily: "'Space Grotesk'",
@@ -345,7 +357,7 @@ export function Download() {
               <h3 style={{ fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: 18, margin: '16px 0 6px' }}>
                 {titulo}
               </h3>
-              <p style={{ fontSize: 14.5, color: '#5a6a82', margin: 0 }}>{texto}</p>
+              <p style={{ fontSize: 14.5, color: 'var(--af-muted-2)', margin: 0 }}>{texto}</p>
             </div>
           ))}
         </div>
@@ -353,7 +365,14 @@ export function Download() {
 
       <section style={{ maxWidth: 1080, margin: '0 auto', padding: '56px 24px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }} data-req>
-          <div style={{ background: '#fff', border: '1px solid #e6ecf5', borderRadius: 18, padding: 30 }}>
+          <div
+            style={{
+              background: 'var(--af-surface)',
+              border: '1px solid var(--af-border)',
+              borderRadius: 18,
+              padding: 30,
+            }}
+          >
             <h3 style={{ fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: 20, margin: '0 0 18px' }}>
               Requisitos do sistema
             </h3>
@@ -365,25 +384,32 @@ export function Download() {
                     display: 'flex',
                     justifyContent: 'space-between',
                     padding: '12px 0',
-                    borderBottom: i < REQUISITOS.length - 1 ? '1px solid #eef2f8' : 'none',
+                    borderBottom: i < REQUISITOS.length - 1 ? '1px solid var(--af-border)' : 'none',
                     fontSize: 15,
                   }}
                 >
-                  <span style={{ color: '#7c8aa0', fontWeight: 600 }}>{label}</span>
+                  <span style={{ color: 'var(--af-muted-3)', fontWeight: 600 }}>{label}</span>
                   <span style={{ fontWeight: 700 }}>{valor}</span>
                 </div>
               ))}
             </div>
           </div>
-          <div style={{ background: '#fff', border: '1px solid #e6ecf5', borderRadius: 18, padding: 30 }}>
+          <div
+            style={{
+              background: 'var(--af-surface)',
+              border: '1px solid var(--af-border)',
+              borderRadius: 18,
+              padding: 30,
+            }}
+          >
             <div
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}
             >
               <h3 style={{ fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: 20, margin: 0 }}>Novidades</h3>
               <span
                 style={{
-                  background: '#e8f1fe',
-                  color: '#0d4ea6',
+                  background: 'var(--af-tile-bg)',
+                  color: 'var(--af-tile-color)',
                   fontWeight: 700,
                   fontSize: 13,
                   padding: '5px 12px',
@@ -395,7 +421,7 @@ export function Download() {
             </div>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
               {NOVIDADES.map(([sinal, cor, texto]) => (
-                <li key={texto} style={{ display: 'flex', gap: 12, fontSize: 15, color: '#2b3b52' }}>
+                <li key={texto} style={{ display: 'flex', gap: 12, fontSize: 15, color: 'var(--af-body-2)' }}>
                   <span style={{ color: cor, fontWeight: 800 }}>{sinal}</span> {texto}
                 </li>
               ))}
@@ -409,8 +435,8 @@ export function Download() {
         <div
           style={{
             marginTop: 24,
-            background: 'linear-gradient(135deg, #e8f1fe, #eef2f8)',
-            border: '1px solid #d7e5f7',
+            background: 'var(--af-note-bg)',
+            border: '1px solid var(--af-note-border)',
             borderRadius: 16,
             padding: '22px 26px',
             display: 'flex',
@@ -422,7 +448,7 @@ export function Download() {
           <span style={{ fontSize: 26 }}>🛡️</span>
           <div style={{ flex: 1, minWidth: 240 }}>
             <div style={{ fontWeight: 700, fontSize: 15 }}>Instalador assinado e verificado</div>
-            <div style={{ fontSize: 14, color: '#47586f' }}>
+            <div style={{ fontSize: 14, color: 'var(--af-muted-1)' }}>
               Distribuímos apenas o instalador oficial. Baixe sempre por esta página.
             </div>
           </div>
@@ -430,9 +456,9 @@ export function Download() {
             style={{
               fontFamily: "'Space Grotesk', monospace",
               fontSize: 12.5,
-              color: '#5a6a82',
-              background: '#fff',
-              border: '1px solid #e2e9f2',
+              color: 'var(--af-muted-2)',
+              background: 'var(--af-surface)',
+              border: '1px solid var(--af-border)',
               borderRadius: 8,
               padding: '8px 12px',
             }}
