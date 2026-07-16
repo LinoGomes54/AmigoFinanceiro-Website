@@ -1,39 +1,35 @@
 import type { ReactNode } from 'react';
 
-/** Barra de título que imita a janela do app desktop nos mockups. */
-export function TitleBar() {
+/**
+ * Barra de título no padrão Windows: título à esquerda, minimizar/maximizar/fechar
+ * à direita. É um mockup decorativo — os controles não são botões de verdade, por
+ * isso ficam fora da árvore de acessibilidade.
+ */
+export function TitleBar({ titulo = 'Amigo Financeiro' }: { titulo?: string }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 7,
-        padding: '11px 14px',
-        background: '#f2f5fb',
-        borderBottom: '1px solid #e2e9f2',
-      }}
-    >
-      <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#ff5f57' }} />
-      <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#febc2e' }} />
-      <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#28c840' }} />
-      <span style={{ marginLeft: 8, fontSize: 12, color: '#7c8aa0', fontWeight: 600 }}>Amigo Financeiro</span>
+    <div className="af-win-titlebar">
+      <div className="af-win-title">
+        <span className="af-win-logo" aria-hidden="true" />
+        {titulo}
+      </div>
+      <div className="af-win-controls" aria-hidden="true">
+        <span className="af-win-ctrl">
+          <span className="af-win-min" />
+        </span>
+        <span className="af-win-ctrl">
+          <span className="af-win-max" />
+        </span>
+        <span className="af-win-ctrl">
+          <span className="af-win-close" />
+        </span>
+      </div>
     </div>
   );
 }
 
 export function AppWindow({ children }: { children: ReactNode }) {
   return (
-    <div
-      style={{
-        background: '#fff',
-        borderRadius: 16,
-        border: '1px solid #e2e9f2',
-        boxShadow:
-          '0 40px 80px -40px rgba(8,49,47,0.45), 0 12px 28px -18px rgba(8,49,47,0.3)',
-        overflow: 'hidden',
-        width: '100%',
-      }}
-    >
+    <div className="af-win">
       <TitleBar />
       {children}
     </div>
