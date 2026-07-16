@@ -37,22 +37,23 @@ interface PlanCardProps {
   cta: string;
   to: string;
   features: Feature[];
-  dark?: boolean;
+  /** Card em destaque (Premium). Não tem relação com o tema claro/escuro do site. */
+  destaque?: boolean;
   badge?: string;
 }
 
-function PlanCard({ nome, preco, por, tag, cta, to, features, dark = false, badge }: PlanCardProps) {
+function PlanCard({ nome, preco, por, tag, cta, to, features, destaque = false, badge }: PlanCardProps) {
   return (
     <div
-      className={`af-plan-card ${dark ? 'af-plan-card--dark' : 'af-plan-card--light'}`}
+      className={`af-plan-card ${destaque ? 'af-plan-card--dark' : 'af-plan-card--light'}`}
       style={{
-        background: dark ? 'linear-gradient(160deg,#123a6b,#0d2e58)' : '#fff',
-        border: dark ? '1px solid #1e4d84' : '1px solid #e6ecf5',
+        background: destaque ? 'linear-gradient(160deg,#123a6b,#0d2e58)' : 'var(--af-plan-bg)',
+        border: destaque ? '1px solid #1e4d84' : '1px solid var(--af-plan-border)',
         borderRadius: 20,
         padding: 32,
         position: 'relative',
         flex: 1,
-        boxShadow: dark ? '0 30px 60px -30px rgba(0,0,0,0.5)' : 'none',
+        boxShadow: destaque ? '0 30px 60px -30px rgba(0,0,0,0.5)' : 'none',
       }}
     >
       {badge && (
@@ -73,7 +74,14 @@ function PlanCard({ nome, preco, por, tag, cta, to, features, dark = false, badg
           {badge}
         </span>
       )}
-      <div style={{ fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: 22, color: dark ? '#fff' : '#0b1f3a' }}>
+      <div
+        style={{
+          fontFamily: "'Space Grotesk'",
+          fontWeight: 700,
+          fontSize: 22,
+          color: destaque ? '#fff' : 'var(--af-plan-title)',
+        }}
+      >
         {nome}
       </div>
       <div
@@ -81,24 +89,38 @@ function PlanCard({ nome, preco, por, tag, cta, to, features, dark = false, badg
           fontFamily: "'Space Grotesk'",
           fontWeight: 700,
           fontSize: 34,
-          color: dark ? '#fff' : '#0b1f3a',
+          color: destaque ? '#fff' : 'var(--af-plan-title)',
           marginTop: 10,
         }}
       >
         {preco}
         {por && (
-          <span style={{ fontSize: 15, fontWeight: 600, color: dark ? '#9fbce6' : '#7c8aa0' }}>{por}</span>
+          <span
+            style={{ fontSize: 15, fontWeight: 600, color: destaque ? '#9fbce6' : 'var(--af-plan-muted)' }}
+          >
+            {por}
+          </span>
         )}
       </div>
-      <p style={{ fontSize: 14, color: dark ? '#9fbce6' : '#5a6a82', margin: '8px 0 20px', minHeight: 20 }}>{tag}</p>
+      <p
+        style={{
+          fontSize: 14,
+          color: destaque ? '#9fbce6' : 'var(--af-plan-tag)',
+          margin: '8px 0 20px',
+          minHeight: 20,
+        }}
+      >
+        {tag}
+      </p>
       <Link
         to={to}
         className="af-plan-cta"
         style={{
           display: 'block',
           textAlign: 'center',
-          background: dark ? '#2f86f0' : '#0b1f3a',
-          color: '#fff',
+          background: destaque ? '#2f86f0' : 'var(--af-plan-cta-bg)',
+          color: destaque ? '#fff' : 'var(--af-plan-cta-color)',
+          border: destaque ? '1px solid transparent' : '1px solid var(--af-plan-cta-border)',
           fontWeight: 700,
           padding: 13,
           borderRadius: 11,
@@ -116,7 +138,13 @@ function PlanCard({ nome, preco, por, tag, cta, to, features, dark = false, badg
               display: 'flex',
               fontSize: 14.5,
               transitionDelay: `${i * 25}ms`,
-              color: incluido ? (dark ? '#dbe8fb' : '#2b3b52') : dark ? '#6b8bb8' : '#9aa6ba',
+              color: incluido
+                ? destaque
+                  ? '#dbe8fb'
+                  : 'var(--af-plan-feat)'
+                : destaque
+                  ? '#6b8bb8'
+                  : 'var(--af-plan-feat-off)',
             }}
           >
             <span style={{ color: incluido ? '#1666d6' : '#c26a72', fontWeight: 800, marginRight: 8 }}>
@@ -192,7 +220,7 @@ export function Planos({ mode }: { mode: PlanosMode }) {
           />
           <PlanCard
             nome="Premium"
-            dark
+            destaque
             preco="R$ 30"
             por="/mês"
             tag="Cobrança mensal. Cancele quando quiser."
