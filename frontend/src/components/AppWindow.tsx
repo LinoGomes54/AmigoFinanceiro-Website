@@ -7,20 +7,20 @@ import type { ReactNode } from 'react';
  */
 export function TitleBar({ titulo = 'Amigo Financeiro' }: { titulo?: string }) {
   return (
-    <div className="af-win-titlebar">
-      <div className="af-win-title">
-        <span className="af-win-logo" aria-hidden="true" />
+    <div className="win-titlebar">
+      <div className="win-title">
+        <span className="win-logo" aria-hidden="true" />
         {titulo}
       </div>
-      <div className="af-win-controls" aria-hidden="true">
-        <span className="af-win-ctrl">
-          <span className="af-win-min" />
+      <div className="win-controls" aria-hidden="true">
+        <span className="win-ctrl">
+          <span className="win-min" />
         </span>
-        <span className="af-win-ctrl">
-          <span className="af-win-max" />
+        <span className="win-ctrl">
+          <span className="win-max" />
         </span>
-        <span className="af-win-ctrl">
-          <span className="af-win-close" />
+        <span className="win-ctrl">
+          <span className="win-close" />
         </span>
       </div>
     </div>
@@ -29,7 +29,7 @@ export function TitleBar({ titulo = 'Amigo Financeiro' }: { titulo?: string }) {
 
 export function AppWindow({ children }: { children: ReactNode }) {
   return (
-    <div className="af-win">
+    <div className="win">
       <TitleBar />
       {children}
     </div>
@@ -42,21 +42,18 @@ interface ScreenshotProps {
   onZoom?: (src: string) => void;
 }
 
-/** Screenshot do app dentro da janela; clicar abre o lightbox quando onZoom é passado. */
+/** Screenshot do app dentro da janela; clicar amplia no lightbox. */
 export function Screenshot({ src, alt, onZoom }: ScreenshotProps) {
   return (
     <AppWindow>
-      <img
-        src={src}
-        alt={alt}
-        onClick={onZoom ? () => onZoom(src) : undefined}
-        style={{
-          display: 'block',
-          width: '100%',
-          height: 'auto',
-          cursor: onZoom ? 'zoom-in' : 'default',
-        }}
-      />
+      {onZoom ? (
+        // Botão de verdade: precisa ser alcançável por teclado, já que abre um diálogo.
+        <button type="button" onClick={() => onZoom(src)} aria-label={`Ampliar: ${alt}`} style={{ display: 'block', width: '100%' }}>
+          <img src={src} alt={alt} className="shot" loading="lazy" />
+        </button>
+      ) : (
+        <img src={src} alt={alt} className="shot" style={{ cursor: 'default' }} loading="lazy" />
+      )}
     </AppWindow>
   );
 }

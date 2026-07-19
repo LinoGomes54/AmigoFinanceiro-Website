@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+import { Icon } from './Icon.tsx';
+import { LinkButton } from './ui/Button.tsx';
 
 export type PlanosMode = 'cards' | 'table';
 
@@ -29,6 +30,19 @@ const TABELA: Array<[recurso: string, gratis: boolean, premium: boolean]> = [
   ['Backup automático na nuvem', false, true],
 ];
 
+function FeatureList({ features }: { features: Feature[] }) {
+  return (
+    <ul className="checklist">
+      {features.map(([incluido, texto]) => (
+        <li key={texto} data-off={!incluido || undefined}>
+          <Icon name={incluido ? 'check' : 'close'} size={17} />
+          <span>{texto}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 interface PlanCardProps {
   nome: string;
   preco: string;
@@ -44,158 +58,69 @@ interface PlanCardProps {
 
 function PlanCard({ nome, preco, por, tag, cta, to, features, destaque = false, badge }: PlanCardProps) {
   return (
-    <div
-      className={`af-plan-card ${destaque ? 'af-plan-card--dark' : 'af-plan-card--light'}`}
-      style={{
-        background: destaque ? 'linear-gradient(160deg,#123a6b,#0d2e58)' : 'var(--af-plan-bg)',
-        border: destaque ? '1px solid #1e4d84' : '1px solid var(--af-plan-border)',
-        borderRadius: 20,
-        padding: 32,
-        position: 'relative',
-        flex: 1,
-        boxShadow: destaque ? '0 30px 60px -30px rgba(0,0,0,0.5)' : 'none',
-      }}
-    >
+    <div className={`plan${destaque ? ' plan--featured' : ''}`}>
       {badge && (
-        <span
-          style={{
-            position: 'absolute',
-            top: 20,
-            right: 20,
-            background: '#d99a3a',
-            color: '#231604',
-            fontWeight: 800,
-            fontSize: 12,
-            padding: '5px 12px',
-            borderRadius: 999,
-            animation: 'afPop .35s ease',
-          }}
-        >
+        <span className="badge badge--accent plan-badge">
+          <Icon name="cloud" size={14} />
           {badge}
         </span>
       )}
-      <div
-        style={{
-          fontFamily: "'Space Grotesk'",
-          fontWeight: 700,
-          fontSize: 22,
-          color: destaque ? '#fff' : 'var(--af-plan-title)',
-        }}
-      >
-        {nome}
-      </div>
-      <div
-        style={{
-          fontFamily: "'Space Grotesk'",
-          fontWeight: 700,
-          fontSize: 34,
-          color: destaque ? '#fff' : 'var(--af-plan-title)',
-          marginTop: 10,
-        }}
-      >
+      <h3 className="plan-name">{nome}</h3>
+      <p className="plan-price">
         {preco}
-        {por && (
-          <span
-            style={{ fontSize: 15, fontWeight: 600, color: destaque ? '#9fbce6' : 'var(--af-plan-muted)' }}
-          >
-            {por}
-          </span>
-        )}
-      </div>
-      <p
-        style={{
-          fontSize: 14,
-          color: destaque ? '#9fbce6' : 'var(--af-plan-tag)',
-          margin: '8px 0 20px',
-          minHeight: 20,
-        }}
-      >
-        {tag}
+        {por && <span>{por}</span>}
       </p>
-      <Link
-        to={to}
-        className="af-plan-cta"
-        style={{
-          display: 'block',
-          textAlign: 'center',
-          background: destaque ? '#2f86f0' : 'var(--af-plan-cta-bg)',
-          color: destaque ? '#fff' : 'var(--af-plan-cta-color)',
-          border: destaque ? '1px solid transparent' : '1px solid var(--af-plan-cta-border)',
-          fontWeight: 700,
-          padding: 13,
-          borderRadius: 11,
-          marginBottom: 22,
-        }}
-      >
+      <p className="plan-tag">{tag}</p>
+      <LinkButton to={to} variant={destaque ? 'primary' : 'outline-dark'} block>
         {cta}
-      </Link>
-      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {features.map(([incluido, texto], i) => (
-          <li
-            key={texto}
-            className="af-feat-li"
-            style={{
-              display: 'flex',
-              fontSize: 14.5,
-              transitionDelay: `${i * 25}ms`,
-              color: incluido
-                ? destaque
-                  ? '#dbe8fb'
-                  : 'var(--af-plan-feat)'
-                : destaque
-                  ? '#6b8bb8'
-                  : 'var(--af-plan-feat-off)',
-            }}
-          >
-            <span style={{ color: incluido ? '#1666d6' : '#c26a72', fontWeight: 800, marginRight: 8 }}>
-              {incluido ? '✓' : '✕'}
-            </span>
-            <span>{texto}</span>
-          </li>
-        ))}
-      </ul>
+      </LinkButton>
+      <FeatureList features={features} />
     </div>
   );
 }
 
 function TabelaPlanos() {
-  const cell = (on: boolean) => (
-    <td style={{ textAlign: 'center', padding: '16px 20px', borderTop: '1px solid #16345e' }}>
-      {on ? (
-        <span style={{ color: '#8fbcff', fontWeight: 800, fontSize: 18 }}>✓</span>
-      ) : (
-        <span style={{ color: '#5a807b', fontWeight: 800, fontSize: 16 }}>—</span>
-      )}
+  const cell = (on: boolean, plano: string, recurso: string) => (
+    <td>
+      <Icon
+        name={on ? 'check' : 'minus'}
+        size={18}
+        label={`${recurso}: ${on ? 'incluído' : 'não incluído'} no plano ${plano}`}
+        style={{
+          margin: '0 auto',
+          color: on ? 'var(--brand-strong)' : 'var(--dark-subtle)',
+        }}
+      />
     </td>
   );
 
   return (
-    <div style={{ background: '#123a6b', border: '1px solid #1e4d84', borderRadius: 20, overflow: 'hidden' }}>
+    <div
+      style={{
+        background: 'var(--dark-surface)',
+        border: '1px solid var(--dark-border)',
+        borderRadius: 'var(--radius-xl)',
+        overflow: 'hidden',
+      }}
+    >
       <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <table className="plan-table">
+          <caption className="sr-only">Comparação entre os planos Grátis e Premium</caption>
           <thead>
             <tr>
-              <th style={{ textAlign: 'left', padding: 20, color: '#9fbce6', fontWeight: 700, fontSize: 14 }}>
-                Recurso
-              </th>
-              <th style={{ padding: 20, color: '#fff', fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: 18 }}>
-                Grátis
-              </th>
-              <th
-                style={{ padding: 20, color: '#8fbcff', fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: 18 }}
-              >
-                Premium
-              </th>
+              <th scope="col">Recurso</th>
+              <th scope="col">Grátis</th>
+              <th scope="col">Premium</th>
             </tr>
           </thead>
           <tbody>
             {TABELA.map(([recurso, gratis, premium]) => (
               <tr key={recurso}>
-                <td style={{ padding: '16px 20px', color: '#dbe8fb', fontSize: 15, borderTop: '1px solid #16345e' }}>
+                <th scope="row" style={{ fontWeight: 'var(--weight-normal)', color: 'var(--dark-muted)' }}>
                   {recurso}
-                </td>
-                {cell(gratis)}
-                {cell(premium)}
+                </th>
+                {cell(gratis, 'Grátis', recurso)}
+                {cell(premium, 'Premium', recurso)}
               </tr>
             ))}
           </tbody>
@@ -207,9 +132,9 @@ function TabelaPlanos() {
 
 export function Planos({ mode }: { mode: PlanosMode }) {
   return (
-    <div key={`pl-${mode}`} style={{ animation: 'afRise .4s cubic-bezier(0.22,1,0.36,1)' }}>
+    <div key={`pl-${mode}`} style={{ animation: 'rise var(--duration-slow) var(--ease-out)' }}>
       {mode === 'cards' ? (
-        <div style={{ display: 'flex', gap: 24, alignItems: 'stretch' }} className="af-plans">
+        <div className="plans-row" style={{ display: 'flex', gap: 'var(--space-6)', alignItems: 'stretch' }}>
           <PlanCard
             nome="Grátis"
             preco="R$ 0"

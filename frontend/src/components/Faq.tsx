@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
+import { Icon } from './Icon.tsx';
+import { Reveal } from './ui/Reveal.tsx';
 
 const FAQS: Array<[pergunta: string, resposta: string]> = [
   [
@@ -25,86 +27,40 @@ const FAQS: Array<[pergunta: string, resposta: string]> = [
 
 export function Faq() {
   const [aberta, setAberta] = useState(0);
+  const baseId = useId();
 
   return (
-    <div style={{ marginTop: 36, display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div className="stack" style={{ gap: 'var(--space-3)' }}>
       {FAQS.map(([pergunta, resposta], i) => {
         const isOpen = aberta === i;
+        const painelId = `${baseId}-painel-${i}`;
+        const botaoId = `${baseId}-botao-${i}`;
+
         return (
-          <div
-            key={pergunta}
-            className="af-faq-card"
-            style={{
-              background: 'var(--af-surface)',
-              border: isOpen ? '1px solid #bcd4f8' : '1px solid var(--af-border)',
-              borderRadius: 14,
-              overflow: 'hidden',
-              boxShadow: isOpen ? '0 18px 40px -24px rgba(22,102,214,0.4)' : '0 1px 0 rgba(0,0,0,0)',
-              transition: 'border-color 0.3s, box-shadow 0.35s',
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => setAberta(isOpen ? -1 : i)}
-              aria-expanded={isOpen}
-              style={{
-                width: '100%',
-                textAlign: 'left',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '20px 22px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 16,
-                fontFamily: "'Manrope', sans-serif",
-              }}
-            >
-              <span style={{ flex: 1, fontWeight: 700, fontSize: 17, color: 'var(--af-text)' }}>{pergunta}</span>
-              <span
-                style={{
-                  width: 26,
-                  height: 26,
-                  flex: 'none',
-                  borderRadius: 8,
-                  display: 'grid',
-                  placeItems: 'center',
-                  background: isOpen ? '#1666d6' : 'var(--af-tile-bg)',
-                  color: isOpen ? '#fff' : 'var(--af-tile-color)',
-                  fontSize: 20,
-                  lineHeight: 1,
-                  transform: isOpen ? 'rotate(135deg)' : 'rotate(0deg)',
-                  transition: 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1), background 0.3s, color 0.3s',
-                }}
-              >
-                +
-              </span>
-            </button>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateRows: isOpen ? '1fr' : '0fr',
-                transition: 'grid-template-rows 0.4s cubic-bezier(0.4,0,0.2,1)',
-              }}
-            >
-              <div style={{ overflow: 'hidden' }}>
-                <p
-                  style={{
-                    margin: 0,
-                    padding: '0 22px 20px',
-                    color: 'var(--af-muted-1)',
-                    fontSize: 15,
-                    lineHeight: 1.6,
-                    opacity: isOpen ? 1 : 0,
-                    transform: isOpen ? 'translateY(0)' : 'translateY(-6px)',
-                    transition: 'opacity 0.3s ease 0.05s, transform 0.35s ease 0.05s',
-                  }}
+          <Reveal key={pergunta} delay={i * 60}>
+            <div className="faq-item" data-open={isOpen}>
+              <h3>
+                <button
+                  type="button"
+                  id={botaoId}
+                  className="faq-trigger"
+                  onClick={() => setAberta(isOpen ? -1 : i)}
+                  aria-expanded={isOpen}
+                  aria-controls={painelId}
                 >
-                  {resposta}
-                </p>
+                  {pergunta}
+                  <span className="faq-icon" aria-hidden="true">
+                    <Icon name="plus" size={16} />
+                  </span>
+                </button>
+              </h3>
+              <div className="faq-body" id={painelId} role="region" aria-labelledby={botaoId}>
+                <div>
+                  <p>{resposta}</p>
+                </div>
               </div>
             </div>
-          </div>
+          </Reveal>
         );
       })}
     </div>
