@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import telaCartoes from '../assets/img/tela-cartoes.png';
 import telaCategorias from '../assets/img/tela-categorias.png';
 import telaConfig from '../assets/img/tela-config.png';
@@ -9,13 +8,12 @@ import telaTransacoes from '../assets/img/tela-transacoes.png';
 import { Screenshot } from '../components/AppWindow.tsx';
 import { Faq } from '../components/Faq.tsx';
 import { SiteFooter } from '../components/Footer.tsx';
+import { Icon, type IconName } from '../components/Icon.tsx';
 import { Lightbox } from '../components/Lightbox.tsx';
-import { Logo } from '../components/Logo.tsx';
 import { Planos, type PlanosMode } from '../components/Planos.tsx';
-import { ThemeToggle } from '../components/ThemeToggle.tsx';
-import { useAuth } from '../context/AuthContext.tsx';
-import { useTheme } from '../context/ThemeContext.tsx';
-import { useScrolled } from '../hooks/useScrolled.ts';
+import { SiteHeader } from '../components/SiteHeader.tsx';
+import { LinkButton } from '../components/ui/Button.tsx';
+import { Reveal } from '../components/ui/Reveal.tsx';
 
 const DESTAQUES = [
   ['100% manual', 'Você decide o que entra. Zero conexão com banco.'],
@@ -23,735 +21,368 @@ const DESTAQUES = [
   ['Windows', 'App desktop nativo para Windows 10 e 11.'],
 ];
 
-/** Cada tile tem o pastel do tema claro e o equivalente escurecido para o tema escuro. */
-const CARDS_RECURSOS: Array<
-  [icone: string, fundoClaro: string, fundoEscuro: string, titulo: string, texto: string, img: string]
-> = [
+interface Feature {
+  icone: IconName;
+  etiqueta: string;
+  titulo: string;
+  texto: string;
+  itens: string[];
+  img: string;
+  alt: string;
+}
+
+const FEATURES: Feature[] = [
+  {
+    icone: 'chart',
+    etiqueta: 'Dashboard',
+    titulo: 'A visão do mês num relance',
+    texto:
+      'Entradas, saídas e saldo do mês no topo. Abaixo, um gráfico anual por cartão e a divisão de gastos por categoria — dá pra ver o padrão sem esforço.',
+    itens: ['Entradas, saídas e saldo do mês', 'Gráfico anual comparando cartões', 'Gasto por categoria em rosca'],
+    img: telaDashboard,
+    alt: 'Dashboard do Amigo Financeiro',
+  },
+  {
+    icone: 'receipt',
+    etiqueta: 'Transações',
+    titulo: 'Cada lançamento no lugar certo',
+    texto:
+      'Registre em segundos, busque por texto e filtre por cartão ou categoria. Compras no crédito podem ser parceladas — o app distribui as parcelas nos meses seguintes automaticamente.',
+    itens: ['Busca e filtros por cartão / categoria', 'Parcelamento automático no crédito'],
+    img: telaTransacoes,
+    alt: 'Tela de transações',
+  },
+];
+
+const CARDS_RECURSOS: Array<[IconName, string, string, string]> = [
+  ['card', 'Cartões', 'Limite, fechamento, vencimento e faturas de cada cartão em um painel só.', telaCartoes],
   [
-    '💳',
-    '#fdf2e2',
-    '#3a2e18',
-    'Cartões',
-    'Limite, fechamento, vencimento e faturas de cada cartão em um painel só.',
-    telaCartoes,
-  ],
-  [
-    '🔁',
-    '#e7f3ff',
-    '#14304f',
+    'repeat',
     'Recorrências',
     'Salário e assinaturas viram lançamentos automáticos, com previsão dos meses seguintes.',
     telaRecorrencias,
   ],
-  [
-    '🏷️',
-    '#f0ebfa',
-    '#2b2440',
-    'Categorias',
-    'Personalizáveis, com cor e ícone próprios — do jeito que faz sentido pra você.',
-    telaCategorias,
-  ],
-  [
-    '🎨',
-    '#e8f1fe',
-    '#16294a',
-    'Personalização',
-    'Temas claro, escuro e gradiente, cores e fontes ajustáveis com prévia ao vivo.',
-    telaConfig,
-  ],
+  ['tag', 'Categorias', 'Personalizáveis, com cor e ícone próprios — do jeito que faz sentido pra você.', telaCategorias],
+  ['palette', 'Personalização', 'Temas claro, escuro e gradiente, cores e fontes ajustáveis com prévia ao vivo.', telaConfig],
+];
+
+const PASSOS_CONTA = [
+  'Você cria a conta aqui no site (nome, email e senha).',
+  'No app desktop, entra com essa mesma conta.',
+  'Seus dados passam a sincronizar na nuvem, com backup automático.',
 ];
 
 export function Home() {
-  const { user } = useAuth();
-  const { isDark, toggleTheme } = useTheme();
-  const scrolled = useScrolled();
   const [modoPlanos, setModoPlanos] = useState<PlanosMode>('cards');
   const [lightbox, setLightbox] = useState<string | null>(null);
 
-  const base = isDark ? '11,18,32' : '245,248,253';
-  const pillOn = {
-    background: '#2f86f0',
-    color: '#04203f',
-    border: 'none',
-    borderRadius: 999,
-    padding: '9px 22px',
-    fontWeight: 700,
-    fontSize: 14,
-    cursor: 'pointer',
-    fontFamily: "'Manrope',sans-serif",
-  };
-  const pillOff = { ...pillOn, background: 'none', color: '#9fbce6' };
-
   return (
-    <div
-      style={{
-        fontFamily: "'Manrope', system-ui, sans-serif",
-        color: 'var(--af-text)',
-        background: 'var(--af-bg)',
-        overflowX: 'hidden',
-        lineHeight: 1.5,
-      }}
-    >
-      <header
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 50,
-          background: scrolled ? `rgba(${base},0.92)` : `rgba(${base},0.7)`,
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          borderBottom: scrolled
-            ? isDark
-              ? '1px solid #223452'
-              : '1px solid #e2e9f2'
-            : '1px solid rgba(226,233,242,0)',
-          boxShadow: scrolled ? '0 10px 30px -18px rgba(11,31,58,0.5)' : '0 0 0 rgba(0,0,0,0)',
-          transition: 'background 0.3s, border-color 0.3s, box-shadow 0.3s',
-        }}
-      >
-        <nav
-          style={{
-            maxWidth: 1160,
-            margin: '0 auto',
-            padding: '0 24px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 20,
-            height: scrolled ? 58 : 72,
-            transition: 'height 0.3s cubic-bezier(0.4,0,0.2,1)',
-          }}
-        >
-          <Logo />
-          <div style={{ flex: 1 }} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 28 }} data-navlinks>
-            <a href="#recursos" style={{ color: 'var(--af-nav)', fontWeight: 600, fontSize: 15 }}>
-              Funcionalidades
-            </a>
-            <a href="#planos" style={{ color: 'var(--af-nav)', fontWeight: 600, fontSize: 15 }}>
-              Planos
-            </a>
-            <Link to="/download" style={{ color: 'var(--af-nav)', fontWeight: 600, fontSize: 15 }}>
-              Download
-            </Link>
-            <a href="#faq" style={{ color: 'var(--af-nav)', fontWeight: 600, fontSize: 15 }}>
-              Perguntas
-            </a>
-          </div>
-          <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
-          {user ? (
-            <span style={{ color: 'var(--af-text)', fontWeight: 700, fontSize: 15, padding: '9px 8px' }}>
-              Olá, {user.nome.split(' ')[0]}
-            </span>
-          ) : (
-            <>
-              <Link to="/login" style={{ color: 'var(--af-text)', fontWeight: 700, fontSize: 15, padding: '9px 8px' }}>
-                Entrar
-              </Link>
-              <Link
-                to="/cadastro"
-                className="af-hover-cta"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  background: '#1666d6',
-                  color: '#fff',
-                  fontWeight: 700,
-                  fontSize: 15,
-                  padding: '10px 18px',
-                  borderRadius: 10,
-                  boxShadow: '0 6px 16px -6px rgba(22,102,214,0.6)',
-                }}
-              >
-                Criar conta
-              </Link>
-            </>
-          )}
-        </nav>
-      </header>
+    <>
+      <a href="#conteudo" className="skip-link">
+        Pular para o conteúdo
+      </a>
+      <SiteHeader />
 
-      <section id="top" style={{ position: 'relative', padding: '84px 24px 40px' }}>
-        <div className="af-hero-bg" aria-hidden="true">
-          <span className="af-blob af-blob-1" />
-          <span className="af-blob af-blob-2" />
-          <span className="af-blob af-blob-3" />
-        </div>
-        <div
-          style={{
-            position: 'relative',
-            maxWidth: 1160,
-            margin: '0 auto',
-            display: 'grid',
-            gridTemplateColumns: '1.05fr 1fr',
-            gap: 56,
-            alignItems: 'center',
-          }}
-          data-hero-grid
-        >
-          <div>
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                background: '#e8f1fe',
-                color: '#0d4ea6',
-                border: '1px solid #cfe0fb',
-                padding: '7px 14px',
-                borderRadius: 999,
-                fontWeight: 700,
-                fontSize: 13,
-              }}
-            >
-              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#2f86f0' }} />
-              Sem conectar o banco. Sem susto.
-            </span>
-            <h1
-              style={{
-                fontFamily: "'Space Grotesk'",
-                fontWeight: 700,
-                fontSize: 56,
-                lineHeight: 1.04,
-                letterSpacing: '-0.025em',
-                margin: '20px 0 0',
-                textWrap: 'balance',
-              }}
-            >
-              Controle financeiro <span style={{ color: '#1666d6' }}>sem enrolação</span>.
-            </h1>
-            <p style={{ fontSize: 19, color: 'var(--af-muted-1)', margin: '20px 0 0', maxWidth: 520, textWrap: 'pretty' }}>
-              Você anota entradas e saídas e enxerga exatamente para onde o dinheiro vai. Nada de integração bancária —
-              só clareza sobre o seu mês, no seu computador.
-            </p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, marginTop: 32 }}>
-              <Link
-                to="/download"
+      <main id="conteudo">
+        {/* ---------------- HERO ---------------- */}
+        <section className="section" style={{ position: 'relative', paddingTop: 'var(--space-20)' }}>
+          <div className="hero-bg" aria-hidden="true">
+            <span className="blob blob--1" />
+            <span className="blob blob--2" />
+            <span className="blob blob--3" />
+          </div>
+
+          <div
+            className="container grid grid--2"
+            style={{ position: 'relative', gap: 'var(--space-16)', alignItems: 'center' }}
+            data-hero
+          >
+            <div className="hero-enter">
+              <span className="badge badge--dot">Sem conectar o banco. Sem susto.</span>
+              <h1 style={{ marginTop: 'var(--space-5)', fontSize: 'var(--text-4xl)' }}>
+                Controle financeiro <span style={{ color: 'var(--brand)' }}>sem enrolação</span>.
+              </h1>
+              <p
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  background: '#0b1f3a',
-                  color: '#fff',
-                  fontWeight: 700,
-                  fontSize: 16,
-                  padding: '15px 24px',
-                  borderRadius: 12,
-                  boxShadow: '0 12px 28px -12px rgba(10,38,36,0.7)',
+                  marginTop: 'var(--space-5)',
+                  maxWidth: '30rem',
+                  fontSize: 'var(--text-lg)',
+                  color: 'var(--text-muted)',
                 }}
               >
-                <span style={{ fontSize: 18 }}>↓</span> Baixar grátis
-                <span style={{ opacity: 0.6, fontWeight: 600, fontSize: 13 }}>Windows</span>
-              </Link>
-              <Link
-                to="/cadastro"
+                Você anota entradas e saídas e enxerga exatamente para onde o dinheiro vai. Nada de integração bancária
+                — só clareza sobre o seu mês, no seu computador.
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-3)', marginTop: 'var(--space-8)' }}>
+                <LinkButton to="/download" size="lg">
+                  <Icon name="download" size={18} />
+                  Baixar grátis
+                </LinkButton>
+                <LinkButton to="/cadastro" variant="secondary" size="lg">
+                  <Icon name="star" size={18} style={{ color: 'var(--accent)' }} />
+                  Criar conta Premium
+                </LinkButton>
+              </div>
+              <p
                 style={{
-                  display: 'inline-flex',
+                  display: 'flex',
                   alignItems: 'center',
-                  gap: 10,
-                  background: 'var(--af-surface)',
-                  color: 'var(--af-text)',
-                  fontWeight: 700,
-                  fontSize: 16,
-                  padding: '15px 24px',
-                  borderRadius: 12,
-                  border: '1.5px solid var(--af-border-2)',
+                  gap: 'var(--space-2)',
+                  marginTop: 'var(--space-5)',
+                  fontSize: 'var(--text-sm)',
+                  color: 'var(--text-subtle)',
                 }}
               >
-                <span style={{ color: '#d99a3a' }}>★</span> Criar conta Premium
-              </Link>
+                <Icon name="check" size={15} style={{ color: 'var(--brand)' }} />
+                Grátis para sempre · sem cadastro · seus dados ficam no seu PC
+              </p>
             </div>
+
+            <div style={{ position: 'relative' }} className="hero-visual">
+              <Screenshot src={telaDashboard} alt="Dashboard do Amigo Financeiro" onZoom={setLightbox} />
+              {/* Embaixo à esquerda: no topo à direita cobriria os controles da janela. */}
+              <div
+                className="card float-card"
+                style={{
+                  position: 'absolute',
+                  bottom: 'calc(var(--space-5) * -1)',
+                  left: 'calc(var(--space-4) * -1)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-3)',
+                  padding: 'var(--space-3) var(--space-4)',
+                  boxShadow: 'var(--shadow-md)',
+                }}
+              >
+                <span className="tile tile--sm" aria-hidden="true">
+                  <Icon name="card" size={17} />
+                </span>
+                <div>
+                  <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--text-subtle)', fontWeight: 600 }}>
+                    Fatura Inter
+                  </div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 'var(--text-sm)' }}>
+                    vence dia 6
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ---------------- DESTAQUES ---------------- */}
+        <section className="container">
+          <div className="grid grid--3">
+            {DESTAQUES.map(([titulo, texto], i) => (
+              <Reveal key={titulo} delay={i * 90}>
+                <div className="card card--interactive" style={{ height: '100%' }}>
+                  <p style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-xl)', fontWeight: 700 }}>
+                    {titulo}
+                  </p>
+                  <p className="card-text">{texto}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+
+        {/* ---------------- RECURSOS ---------------- */}
+        <section id="recursos" className="section">
+          <div className="container">
+            <Reveal className="section-head section-head--center">
+              <span className="eyebrow">Tudo num lugar só</span>
+              <h2 className="section-title">Ferramentas simples para um mês sob controle</h2>
+              <p className="section-sub">Do lançamento rápido à visão anual — sem planilha, sem complicação.</p>
+            </Reveal>
+
+            {FEATURES.map((feature, i) => (
+              <Reveal key={feature.titulo}>
+                <div
+                  className="grid grid--2 feature-row"
+                  style={{
+                    gap: 'var(--space-12)',
+                    alignItems: 'center',
+                    marginTop: i === 0 ? 0 : 'var(--space-20)',
+                  }}
+                >
+                  {/* Alterna o lado da imagem sem quebrar a ordem de leitura no mobile. */}
+                  <div style={{ order: i % 2 === 0 ? 0 : 1 }}>
+                    <span className="badge">
+                      <Icon name={feature.icone} size={15} />
+                      {feature.etiqueta}
+                    </span>
+                    <h3 style={{ marginTop: 'var(--space-4)', fontSize: 'var(--text-2xl)' }}>{feature.titulo}</h3>
+                    <p style={{ margin: 'var(--space-3) 0 var(--space-6)', color: 'var(--text-muted)' }}>
+                      {feature.texto}
+                    </p>
+                    <ul className="checklist">
+                      {feature.itens.map((item) => (
+                        <li key={item}>
+                          <Icon name="check" size={17} />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <Screenshot src={feature.img} alt={feature.alt} onZoom={setLightbox} />
+                </div>
+              </Reveal>
+            ))}
+
+            <div className="grid grid--2" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-20)' }}>
+              {CARDS_RECURSOS.map(([icone, titulo, texto, img], i) => (
+                <Reveal key={titulo} delay={(i % 2) * 90}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                    <span className="tile" aria-hidden="true">
+                      <Icon name={icone} size={20} />
+                    </span>
+                    <h3 style={{ fontSize: 'var(--text-xl)' }}>{titulo}</h3>
+                  </div>
+                  <p className="card-text" style={{ margin: 'var(--space-3) 0 var(--space-5)' }}>
+                    {texto}
+                  </p>
+                  <Screenshot src={img} alt={`Tela de ${titulo.toLowerCase()}`} onZoom={setLightbox} />
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ---------------- PLANOS ---------------- */}
+        <section id="planos" className="section" style={{ background: 'var(--dark-bg)' }}>
+          <div className="container">
+            <Reveal className="section-head section-head--center">
+              <span className="eyebrow" style={{ color: 'var(--brand-strong)' }}>
+                Planos
+              </span>
+              <h2 className="section-title" style={{ color: 'var(--dark-text)' }}>
+                Comece grátis. Vá pra nuvem quando quiser.
+              </h2>
+              <p className="section-sub" style={{ color: 'var(--dark-muted)' }}>
+                As mesmas funcionalidades nos dois planos. O Premium adiciona sincronização e backup.
+              </p>
+            </Reveal>
+
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'var(--space-8)' }}>
+              <div className="segmented" role="group" aria-label="Formato de exibição dos planos">
+                <button type="button" onClick={() => setModoPlanos('cards')} aria-pressed={modoPlanos === 'cards'}>
+                  Cards
+                </button>
+                <button type="button" onClick={() => setModoPlanos('table')} aria-pressed={modoPlanos === 'table'}>
+                  Tabela
+                </button>
+              </div>
+            </div>
+
+            <Planos mode={modoPlanos} />
+
             <p
               style={{
-                fontSize: 14,
-                color: 'var(--af-muted-3)',
-                marginTop: 18,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
+                marginTop: 'var(--space-8)',
+                textAlign: 'center',
+                fontSize: 'var(--text-sm)',
+                color: 'var(--dark-subtle)',
               }}
             >
-              <span style={{ color: '#1666d6', fontWeight: 800 }}>✓</span> Grátis para sempre &nbsp;·&nbsp; sem
-              cadastro &nbsp;·&nbsp; seus dados ficam no seu PC
+              Premium por <strong style={{ color: 'var(--dark-muted)' }}>R$ 30/mês</strong> — cancele quando quiser, sem
+              fidelidade.
             </p>
           </div>
-          <div style={{ position: 'relative' }}>
-            {/* Fica embaixo à esquerda: no topo à direita cobriria os controles da janela. */}
-            <div
-              style={{
-                position: 'absolute',
-                bottom: -20,
-                left: -14,
-                background: 'var(--af-win-bg)',
-                border: '1px solid var(--af-win-border)',
-                borderRadius: 12,
-                boxShadow: '0 18px 40px -20px var(--af-win-shadow)',
-                padding: '10px 14px',
-                zIndex: 2,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-              }}
-            >
-              <span
+        </section>
+
+        {/* ---------------- DOWNLOAD ---------------- */}
+        <section id="download" className="section">
+          <div className="container">
+            <Reveal>
+              <div
+                className="card card--lg"
                 style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: 8,
-                  background: isDark ? '#1a2c4d' : '#e8f1fe',
-                  display: 'grid',
-                  placeItems: 'center',
-                  fontSize: 16,
+                  textAlign: 'center',
+                  padding: 'var(--space-16) var(--space-8)',
+                  background: 'linear-gradient(160deg, var(--brand-soft), var(--surface))',
                 }}
               >
-                💳
-              </span>
+                <h2 className="section-title">Baixe o Amigo Financeiro</h2>
+                <p className="section-sub" style={{ marginBottom: 'var(--space-8)' }}>
+                  Grátis, sem cadastro. Baixe e comece hoje.
+                </p>
+                <LinkButton to="/download" size="lg" className="btn--download">
+                  <Icon name="windows" size={26} />
+                  <span>
+                    <span className="btn-sub">Baixar para</span>
+                    <span className="btn-main">Windows</span>
+                  </span>
+                </LinkButton>
+                <p style={{ marginTop: 'var(--space-5)', fontSize: 'var(--text-sm)', color: 'var(--text-subtle)' }}>
+                  Windows 10+ · ~40 MB
+                </p>
+              </div>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* ---------------- CONTA PREMIUM ---------------- */}
+        <section className="section--tight container">
+          <Reveal>
+            <div className="card card--lg grid grid--2" style={{ gap: 'var(--space-12)', alignItems: 'center' }}>
               <div>
-                <div style={{ fontSize: 10, color: 'var(--af-win-title)', fontWeight: 600 }}>Fatura Inter</div>
-                <div
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 700,
-                    color: 'var(--af-text)',
-                    fontFamily: "'Space Grotesk'",
-                  }}
-                >
-                  vence dia 6
-                </div>
-              </div>
-            </div>
-            <Screenshot src={telaDashboard} alt="Dashboard do Amigo Financeiro" onZoom={setLightbox} />
-          </div>
-        </div>
-      </section>
-
-      <section style={{ maxWidth: 1160, margin: '32px auto 0', padding: '0 24px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }} data-stats>
-          {DESTAQUES.map(([titulo, texto]) => (
-            <div
-              key={titulo}
-              style={{
-                background: 'var(--af-surface)',
-                border: '1px solid var(--af-border)',
-                borderRadius: 16,
-                padding: '22px 24px',
-              }}
-            >
-              <div style={{ fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: 30, color: 'var(--af-text)' }}>
-                {titulo}
-              </div>
-              <div style={{ color: 'var(--af-muted-2)', fontSize: 14, marginTop: 4 }}>{texto}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section id="recursos" style={{ maxWidth: 1160, margin: '0 auto', padding: '96px 24px 40px' }}>
-        <div style={{ textAlign: 'center', maxWidth: 680, margin: '0 auto' }}>
-          <span
-            style={{
-              color: '#1666d6',
-              fontWeight: 700,
-              fontSize: 14,
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-            }}
-          >
-            Tudo num lugar só
-          </span>
-          <h2
-            style={{
-              fontFamily: "'Space Grotesk'",
-              fontWeight: 700,
-              fontSize: 40,
-              letterSpacing: '-0.02em',
-              margin: '12px 0 0',
-              textWrap: 'balance',
-            }}
-          >
-            Ferramentas simples para um mês sob controle
-          </h2>
-          <p style={{ fontSize: 18, color: 'var(--af-muted-1)', margin: '16px 0 0' }}>
-            Do lançamento rápido à visão anual — sem planilha, sem complicação.
-          </p>
-        </div>
-
-        <div
-          style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center', marginTop: 64 }}
-          data-feat
-        >
-          <div>
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                background: '#e8f1fe',
-                color: '#0d4ea6',
-                padding: '6px 12px',
-                borderRadius: 8,
-                fontWeight: 700,
-                fontSize: 13,
-              }}
-            >
-              📊 Dashboard
-            </span>
-            <h3
-              style={{
-                fontFamily: "'Space Grotesk'",
-                fontWeight: 700,
-                fontSize: 28,
-                margin: '16px 0 0',
-                letterSpacing: '-0.01em',
-              }}
-            >
-              A visão do mês num relance
-            </h3>
-            <p style={{ fontSize: 17, color: 'var(--af-muted-1)', margin: '12px 0 20px' }}>
-              Entradas, saídas e saldo do mês no topo. Abaixo, um gráfico anual por cartão e a divisão de gastos por
-              categoria — dá pra ver o padrão sem esforço.
-            </p>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {[
-                'Entradas, saídas e saldo do mês',
-                'Gráfico anual comparando cartões',
-                'Gasto por categoria em rosca',
-              ].map((item) => (
-                <li key={item} style={{ display: 'flex', gap: 10, fontSize: 15, color: 'var(--af-body-2)' }}>
-                  <span style={{ color: '#1666d6', fontWeight: 800 }}>✓</span> {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <Screenshot src={telaDashboard} alt="Dashboard do Amigo Financeiro" onZoom={setLightbox} />
-          </div>
-        </div>
-
-        <div
-          style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center', marginTop: 80 }}
-          data-feat-rev
-        >
-          <div style={{ order: 2 }}>
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                background: '#e7f3ff',
-                color: '#1560a8',
-                padding: '6px 12px',
-                borderRadius: 8,
-                fontWeight: 700,
-                fontSize: 13,
-              }}
-            >
-              🧾 Transações
-            </span>
-            <h3
-              style={{
-                fontFamily: "'Space Grotesk'",
-                fontWeight: 700,
-                fontSize: 28,
-                margin: '16px 0 0',
-                letterSpacing: '-0.01em',
-              }}
-            >
-              Cada lançamento no lugar certo
-            </h3>
-            <p style={{ fontSize: 17, color: 'var(--af-muted-1)', margin: '12px 0 20px' }}>
-              Registre em segundos, busque por texto e filtre por cartão ou categoria. Compras no crédito podem ser
-              parceladas — o app distribui as parcelas nos meses seguintes automaticamente.
-            </p>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {['Busca e filtros por cartão / categoria', 'Parcelamento automático no crédito'].map((item) => (
-                <li key={item} style={{ display: 'flex', gap: 10, fontSize: 15, color: 'var(--af-body-2)' }}>
-                  <span style={{ color: '#1666d6', fontWeight: 800 }}>✓</span> {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div style={{ order: 1 }}>
-            <Screenshot src={telaTransacoes} alt="Tela de transações" onZoom={setLightbox} />
-          </div>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px 32px', marginTop: 88 }} data-feat-cards>
-          {CARDS_RECURSOS.map(([icone, fundoClaro, fundoEscuro, titulo, texto, img]) => (
-            <div key={titulo}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div
-                  style={{
-                    width: 42,
-                    height: 42,
-                    borderRadius: 11,
-                    background: isDark ? fundoEscuro : fundoClaro,
-                    display: 'grid',
-                    placeItems: 'center',
-                    fontSize: 20,
-                  }}
-                >
-                  {icone}
-                </div>
-                <h4 style={{ fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: 20, margin: 0 }}>{titulo}</h4>
-              </div>
-              <p style={{ fontSize: 15, color: 'var(--af-muted-2)', margin: '12px 0 18px' }}>{texto}</p>
-              <Screenshot src={img} alt={`Tela de ${titulo.toLowerCase()}`} onZoom={setLightbox} />
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section id="planos" style={{ background: '#0a2a52', marginTop: 88, padding: '84px 24px' }}>
-        <div style={{ maxWidth: 1080, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto' }}>
-            <span
-              style={{
-                color: '#8fbcff',
-                fontWeight: 700,
-                fontSize: 14,
-                letterSpacing: '0.06em',
-                textTransform: 'uppercase',
-              }}
-            >
-              Planos
-            </span>
-            <h2
-              style={{
-                fontFamily: "'Space Grotesk'",
-                fontWeight: 700,
-                fontSize: 40,
-                letterSpacing: '-0.02em',
-                margin: '12px 0 0',
-                color: '#fff',
-                textWrap: 'balance',
-              }}
-            >
-              Comece grátis. Vá pra nuvem quando quiser.
-            </h2>
-            <p style={{ fontSize: 18, color: '#9fbce6', margin: '16px 0 0' }}>
-              As mesmas funcionalidades nos dois planos. O Premium adiciona sincronização e backup.
-            </p>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 32 }}>
-            <div
-              style={{
-                display: 'inline-flex',
-                background: '#123a6b',
-                border: '1px solid #1e4d84',
-                borderRadius: 999,
-                padding: 4,
-              }}
-            >
-              <button type="button" onClick={() => setModoPlanos('cards')} style={modoPlanos === 'cards' ? pillOn : pillOff}>
-                Cards
-              </button>
-              <button type="button" onClick={() => setModoPlanos('table')} style={modoPlanos === 'table' ? pillOn : pillOff}>
-                Tabela
-              </button>
-            </div>
-          </div>
-
-          <div style={{ marginTop: 36 }}>
-            <Planos mode={modoPlanos} />
-          </div>
-
-          <p style={{ textAlign: 'center', color: '#7ba0d4', fontSize: 14, marginTop: 28 }}>
-            Premium por <strong style={{ color: '#d4e4fb' }}>R$ 30/mês</strong> — cancele quando quiser, sem fidelidade.
-          </p>
-        </div>
-      </section>
-
-      <section id="download" style={{ maxWidth: 1160, margin: '0 auto', padding: '96px 24px' }}>
-        <div
-          style={{
-            background: 'linear-gradient(135deg, #e8f1fe, #e7f3ff)',
-            border: '1px solid #d7e5f7',
-            borderRadius: 24,
-            padding: 56,
-            textAlign: 'center',
-          }}
-        >
-          <h2
-            style={{
-              fontFamily: "'Space Grotesk'",
-              fontWeight: 700,
-              fontSize: 36,
-              letterSpacing: '-0.02em',
-              margin: 0,
-              textWrap: 'balance',
-              color: '#0b1f3a',
-            }}
-          >
-            Baixe o Amigo Financeiro
-          </h2>
-          <p style={{ fontSize: 18, color: '#47586f', margin: '14px 0 32px' }}>
-            Grátis, sem cadastro. Baixe e comece hoje.
-          </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'center' }}>
-            <Link
-              to="/download"
-              className="af-hover-dl"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 14,
-                background: '#0b1f3a',
-                color: '#fff',
-                padding: '16px 28px',
-                borderRadius: 14,
-                boxShadow: '0 14px 30px -14px rgba(10,38,36,0.7)',
-              }}
-            >
-              <span style={{ fontSize: 28 }}>⊞</span>
-              <span style={{ textAlign: 'left' }}>
-                <span style={{ display: 'block', fontSize: 12, opacity: 0.7, fontWeight: 600 }}>Baixar para</span>
-                <span style={{ display: 'block', fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: 18 }}>
-                  Windows
+                <span className="badge badge--accent">
+                  <Icon name="star" size={14} />
+                  Premium
                 </span>
-              </span>
-            </Link>
-          </div>
-          <p style={{ fontSize: 13, color: '#7c8aa0', marginTop: 22 }}>Windows 10+ · ~40 MB</p>
-        </div>
-      </section>
+                <h2 style={{ margin: 'var(--space-4) 0 0', fontSize: 'var(--text-2xl)' }}>
+                  Conta só pra quem quer nuvem
+                </h2>
+                <p style={{ margin: 'var(--space-3) 0 var(--space-6)', color: 'var(--text-muted)' }}>
+                  O app grátis funciona 100% sem conta. Você só cria uma conta se quiser sincronizar entre dispositivos
+                  e ter backup automático — e o cadastro acontece aqui no site.
+                </p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-3)' }}>
+                  <LinkButton to="/cadastro">Criar conta Premium</LinkButton>
+                  <LinkButton to="/login" variant="secondary">
+                    Já tenho conta
+                  </LinkButton>
+                </div>
+              </div>
 
-      <section style={{ maxWidth: 1160, margin: '0 auto', padding: '0 24px 96px' }}>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: 48,
-            alignItems: 'center',
-            background: 'var(--af-surface)',
-            border: '1px solid var(--af-border)',
-            borderRadius: 24,
-            padding: 48,
-          }}
-          data-account
-        >
-          <div>
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                background: '#fdf2e2',
-                color: '#a9701c',
-                padding: '6px 12px',
-                borderRadius: 8,
-                fontWeight: 700,
-                fontSize: 13,
-              }}
-            >
-              ★ Premium
-            </span>
-            <h2
-              style={{
-                fontFamily: "'Space Grotesk'",
-                fontWeight: 700,
-                fontSize: 32,
-                letterSpacing: '-0.02em',
-                margin: '16px 0 0',
-                textWrap: 'balance',
-              }}
-            >
-              Conta só pra quem quer nuvem
-            </h2>
-            <p style={{ fontSize: 17, color: 'var(--af-muted-1)', margin: '14px 0 24px' }}>
-              O app grátis funciona 100% sem conta. Você só cria uma conta se quiser sincronizar entre dispositivos e
-              ter backup automático — e o cadastro acontece aqui no site.
-            </p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-              <Link
-                to="/cadastro"
+              <div
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  background: '#1666d6',
-                  color: '#fff',
-                  fontWeight: 700,
-                  padding: '13px 22px',
-                  borderRadius: 11,
-                  boxShadow: '0 10px 24px -12px rgba(14,147,132,0.7)',
+                  padding: 'var(--space-6)',
+                  background: 'var(--surface-inset)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius-lg)',
                 }}
               >
-                Criar conta Premium
-              </Link>
-              <Link
-                to="/login"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  background: 'var(--af-surface)',
-                  color: 'var(--af-text)',
-                  fontWeight: 700,
-                  padding: '13px 22px',
-                  borderRadius: 11,
-                  border: '1.5px solid var(--af-border-2)',
-                }}
-              >
-                Já tenho conta
-              </Link>
+                <p style={{ fontWeight: 700, marginBottom: 'var(--space-4)' }}>Como funciona o login</p>
+                <ol className="stack" style={{ gap: 'var(--space-4)' }}>
+                  {PASSOS_CONTA.map((passo, i) => (
+                    <li key={passo} style={{ display: 'flex', gap: 'var(--space-3)', color: 'var(--text-muted)' }}>
+                      <span className="tile tile--sm" aria-hidden="true" style={{ fontWeight: 700 }}>
+                        {i + 1}
+                      </span>
+                      <span style={{ paddingTop: 4 }}>{passo}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
             </div>
-          </div>
-          <div
-            style={{
-              background: 'var(--af-bg)',
-              border: '1px solid var(--af-border)',
-              borderRadius: 16,
-              padding: 24,
-            }}
-          >
-            <div style={{ fontWeight: 700, color: 'var(--af-text)', marginBottom: 14 }}>Como funciona o login</div>
-            <ol
-              style={{
-                margin: 0,
-                paddingLeft: 20,
-                color: 'var(--af-muted-1)',
-                fontSize: 15,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 10,
-              }}
-            >
-              <li>Você cria a conta aqui no site (nome, email e senha).</li>
-              <li>No app desktop, entra com essa mesma conta.</li>
-              <li>Seus dados passam a sincronizar na nuvem, com backup automático.</li>
-            </ol>
-          </div>
-        </div>
-      </section>
+          </Reveal>
+        </section>
 
-      <section id="faq" style={{ maxWidth: 760, margin: '0 auto', padding: '0 24px 96px' }}>
-        <div style={{ textAlign: 'center' }}>
-          <span
-            style={{
-              color: '#1666d6',
-              fontWeight: 700,
-              fontSize: 14,
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-            }}
-          >
-            Perguntas frequentes
-          </span>
-          <h2
-            style={{
-              fontFamily: "'Space Grotesk'",
-              fontWeight: 700,
-              fontSize: 36,
-              letterSpacing: '-0.02em',
-              margin: '12px 0 0',
-            }}
-          >
-            Ainda em dúvida?
-          </h2>
-        </div>
-        <Faq />
-      </section>
+        {/* ---------------- FAQ ---------------- */}
+        <section id="faq" className="section">
+          <div className="container container--narrow">
+            <Reveal className="section-head section-head--center">
+              <span className="eyebrow">Perguntas frequentes</span>
+              <h2 className="section-title">Ainda em dúvida?</h2>
+            </Reveal>
+            <Faq />
+          </div>
+        </section>
+      </main>
 
       <SiteFooter />
       <Lightbox src={lightbox} onClose={() => setLightbox(null)} />
-    </div>
+    </>
   );
 }
