@@ -1,0 +1,192 @@
+/**
+ * Tokens de design. Nenhuma regra aqui — só variáveis.
+ * Toda cor, medida e tempo do site sai daqui; nada de valor solto nos componentes.
+ */
+
+:root {
+  /* ---- Tipografia ---- */
+  --font-sans: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Space Grotesk', var(--font-sans);
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, monospace;
+
+  /* Escala modular (~1.2). Substitui os 24 tamanhos avulsos do protótipo. */
+  --text-2xs: 0.6875rem; /* 11px */
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.8125rem; /* 13px */
+  --text-base: 0.9375rem; /* 15px */
+  --text-md: 1rem; /* 16px */
+  --text-lg: 1.125rem; /* 18px */
+  --text-xl: 1.375rem; /* 22px */
+  --text-2xl: 1.75rem; /* 28px */
+  --text-3xl: 2.25rem; /* 36px */
+  --text-4xl: 3rem; /* 48px */
+
+  --leading-tight: 1.08;
+  --leading-snug: 1.3;
+  --leading-normal: 1.6;
+
+  --tracking-tight: -0.03em;
+  --tracking-snug: -0.015em;
+  --tracking-wide: 0.06em;
+
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+
+  /* ---- Espaçamento (base 4px) ---- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* ---- Raio ---- */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 999px;
+
+  /* ---- Layout ---- */
+  --container: 1120px;
+  --container-narrow: 720px;
+  --header-h: 68px;
+  --header-h-scrolled: 56px;
+
+  /* ---- Movimento ----
+     Curvas nomeadas pelo uso, não pelos números, para manter o site coeso. */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --duration-fast: 140ms;
+  --duration-base: 220ms;
+  --duration-slow: 380ms;
+  --duration-slower: 620ms;
+
+  /* ---- Elevação ----
+     Minimalista: sombras curtas e suaves; profundidade vem da borda, não do blur. */
+  --shadow-xs: 0 1px 2px rgba(11, 31, 58, 0.05);
+  --shadow-sm: 0 2px 8px -2px rgba(11, 31, 58, 0.08);
+  --shadow-md: 0 8px 24px -8px rgba(11, 31, 58, 0.12);
+  --shadow-lg: 0 20px 48px -16px rgba(11, 31, 58, 0.16);
+  --shadow-brand: 0 8px 24px -10px rgba(22, 102, 214, 0.5);
+
+  --z-header: 50;
+  --z-overlay: 200;
+}
+
+/* ================= TEMA CLARO ================= */
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  /* Marca — os mesmos tons nos dois temas, para a identidade não escorregar. */
+  --brand: #1666d6;
+  --brand-strong: #0d4ea6;
+  --brand-soft: #e8f1fe;
+  --brand-contrast: #ffffff;
+
+  --accent: #d99a3a;
+  --danger: #c0392b;
+  --success: #1c7a49;
+  /* Verde intermediário da barra de força da senha. */
+  --strength-good: #4a9d68;
+  /* Gradiente das barras nos gráficos ilustrativos. */
+  --chart-bar: linear-gradient(180deg, #4f97ee, #0f4fb0);
+
+  /* Superfícies */
+  --bg: #f7f9fc;
+  --bg-rgb: 247, 249, 252;
+  --surface: #ffffff;
+  --surface-2: #f2f5fa;
+  --surface-inset: #f7f9fc;
+
+  /* Texto */
+  --text: #0b1f3a;
+  --text-muted: #4a5b73;
+  --text-subtle: #6b7a91;
+
+  /* Traços */
+  --border: #e5eaf2;
+  --border-strong: #d2dbe8;
+
+  /* Seção escura (planos, rodapé) — fixa, é um bloco de contraste proposital. */
+  --dark-bg: #0a2038;
+  --dark-surface: #11304f;
+  --dark-border: #1c4368;
+  --dark-text: #ffffff;
+  --dark-muted: #9db8d8;
+  --dark-subtle: #6f8dae;
+
+  /* Janela do app nos mockups */
+  --win-bg: #ffffff;
+  --win-chrome: #f2f5fa;
+  --win-border: #e5eaf2;
+  --win-title: #4a5b73;
+
+  /* Brilhos do fundo animado */
+  --glow-1: #7db2f7;
+  --glow-2: #a9d2ff;
+  --glow-3: #cfe3ff;
+  --glow-opacity: 0.5;
+}
+
+/* ================= TEMA ESCURO ================= */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --brand: #4f97ee;
+  --brand-strong: #6faaf2;
+  --brand-soft: #14294a;
+  --brand-contrast: #04182f;
+
+  --accent: #e0ac57;
+  --danger: #ef8177;
+  --success: #5cc48d;
+
+  --bg: #080e1a;
+  --bg-rgb: 8, 14, 26;
+  --surface: #0f1826;
+  --surface-2: #151f31;
+  --surface-inset: #0c1422;
+
+  --text: #eef3fb;
+  --text-muted: #a7b8d0;
+  --text-subtle: #8496b0;
+
+  --border: #1e2b40;
+  --border-strong: #2a3a53;
+
+  --dark-bg: #0c1524;
+  --dark-surface: #131f33;
+  --dark-border: #24344c;
+  --dark-text: #ffffff;
+  --dark-muted: #a7b8d0;
+  --dark-subtle: #7d8fa9;
+
+  --win-bg: #0f1826;
+  --win-chrome: #151f31;
+  --win-border: #24344c;
+  --win-title: #a7b8d0;
+
+  --glow-1: #1d5ec4;
+  --glow-2: #14407f;
+  --glow-3: #2f86f0;
+  --glow-opacity: 0.28;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px -8px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 20px 48px -16px rgba(0, 0, 0, 0.6);
+  --shadow-brand: 0 8px 24px -10px rgba(22, 102, 214, 0.45);
+}

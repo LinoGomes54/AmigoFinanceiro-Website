@@ -1,0 +1,9 @@
+/**
+ * Ponto de entrada dos estilos. A ordem importa:
+ * tokens definem as variáveis, base zera e configura o documento,
+ * components usa os tokens, animations fecha com o movimento.
+ */
+@import './tokens.css';
+@import './base.css';
+@import './components.css';
+@import './animations.css';

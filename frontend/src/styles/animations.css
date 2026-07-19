@@ -1,0 +1,252 @@
+/** Keyframes e utilitários de movimento. */
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes icon-in {
+  from {
+    opacity: 0;
+    transform: rotate(-70deg) scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pop {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.96);
+  }
+  60% {
+    transform: translateY(0) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ================= SCROLL REVEAL =================
+   O elemento entra invisível e sobe quando o IntersectionObserver marca
+   data-visible. A transição fica no CSS; o JS só liga o atributo. */
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity var(--duration-slower) var(--ease-out),
+    transform var(--duration-slower) var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+[data-reveal][data-visible='true'] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Sem JS (ou com JS quebrado) o conteúdo não pode ficar invisível. */
+.no-js [data-reveal] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Movimento reduzido: sem deslocamento e sem espera para aparecer. */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    transition-delay: 0ms !important;
+  }
+}
+
+/* ================= FUNDO ANIMADO DO HERO ================= */
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  /* Isola o repaint dos blobs do resto da página. */
+  contain: strict;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: var(--glow-opacity);
+  will-change: transform;
+}
+
+.blob--1 {
+  width: 34rem;
+  height: 34rem;
+  top: -12rem;
+  right: -6rem;
+  background: var(--glow-1);
+  animation: drift-1 21s var(--ease-in-out) infinite;
+}
+
+.blob--2 {
+  width: 30rem;
+  height: 30rem;
+  top: -4rem;
+  left: -9rem;
+  background: var(--glow-2);
+  animation: drift-2 26s var(--ease-in-out) infinite;
+}
+
+.blob--3 {
+  width: 24rem;
+  height: 24rem;
+  bottom: -13rem;
+  left: 38%;
+  background: var(--glow-3);
+  animation: drift-3 30s var(--ease-in-out) infinite;
+}
+
+@keyframes drift-1 {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-3.5rem, 3rem, 0) scale(1.14);
+  }
+}
+
+@keyframes drift-2 {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(4.5rem, 2.5rem, 0) scale(0.88);
+  }
+}
+
+@keyframes drift-3 {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-3rem, -3.5rem, 0) scale(1.18);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blob {
+    animation: none;
+  }
+}
+
+/* ================= SPINNER ================= */
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  border: 2px solid color-mix(in srgb, currentColor 35%, transparent);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* ================= ENTRADA DO HERO =================
+   Elementos-chave sobem em cascata no primeiro paint. */
+
+.hero-enter > * {
+  animation: rise var(--duration-slower) var(--ease-out) both;
+}
+
+.hero-enter > *:nth-child(1) {
+  animation-delay: 60ms;
+}
+.hero-enter > *:nth-child(2) {
+  animation-delay: 130ms;
+}
+.hero-enter > *:nth-child(3) {
+  animation-delay: 200ms;
+}
+.hero-enter > *:nth-child(4) {
+  animation-delay: 270ms;
+}
+.hero-enter > *:nth-child(5) {
+  animation-delay: 340ms;
+}
+
+.hero-visual {
+  animation: rise var(--duration-slower) var(--ease-out) 180ms both;
+}
+
+/* Card flutuante que "respira" sobre a janela do app. */
+.float-card {
+  animation:
+    rise var(--duration-slower) var(--ease-out) 420ms both,
+    float 6s var(--ease-in-out) 1s infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float-card {
+    animation: none;
+  }
+}
