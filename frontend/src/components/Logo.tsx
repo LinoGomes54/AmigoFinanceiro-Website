@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 interface LogoProps {
@@ -10,14 +11,35 @@ interface LogoProps {
   asLink?: boolean;
 }
 
+/** Ícone do app; enquanto o arquivo não existe, cai no "A" com gradiente da marca. */
+function LogoMark() {
+  const [semImagem, setSemImagem] = useState(false);
+
+  if (semImagem) {
+    return (
+      <span className="logo-mark" aria-hidden="true">
+        A
+      </span>
+    );
+  }
+
+  return (
+    <img
+      className="logo-mark logo-mark--img"
+      src="/icon.png"
+      alt=""
+      aria-hidden="true"
+      onError={() => setSemImagem(true)}
+    />
+  );
+}
+
 export function Logo({ onDark = false, asLink = true }: LogoProps) {
   const className = ['logo', onDark && 'logo--on-dark', !asLink && 'logo--static'].filter(Boolean).join(' ');
 
   const conteudo = (
     <>
-      <span className="logo-mark" aria-hidden="true">
-        A
-      </span>
+      <LogoMark />
       Amigo Financeiro
     </>
   );

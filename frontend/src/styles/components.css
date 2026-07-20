@@ -474,6 +474,12 @@ section[id] {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 30%, transparent);
 }
 
+/* Quando é a imagem real do app: sem gradiente nem texto, só o ícone recortado. */
+.logo-mark--img {
+  background: none;
+  object-fit: cover;
+}
+
 .logo--on-dark,
 .logo--on-dark:hover {
   color: var(--dark-text);
