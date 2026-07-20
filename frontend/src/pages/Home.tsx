@@ -8,6 +8,7 @@ import telaTransacoes from '../assets/img/tela-transacoes.png';
 import { Screenshot } from '../components/AppWindow.tsx';
 import { Faq } from '../components/Faq.tsx';
 import { SiteFooter } from '../components/Footer.tsx';
+import { HeroBackground } from '../components/HeroBackground.tsx';
 import { Icon, type IconName } from '../components/Icon.tsx';
 import { Lightbox } from '../components/Lightbox.tsx';
 import { Planos, type PlanosMode } from '../components/Planos.tsx';
@@ -92,6 +93,7 @@ export function Home() {
             <span className="blob blob--1" />
             <span className="blob blob--2" />
             <span className="blob blob--3" />
+            <HeroBackground />
           </div>
 
           <div
