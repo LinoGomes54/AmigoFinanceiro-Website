@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
+import { AnimatedBackground } from './AnimatedBackground.tsx';
 import { Icon } from './Icon.tsx';
 import { Logo } from './Logo.tsx';
+import { ThemeToggle } from './ThemeToggle.tsx';
 
 interface AuthLayoutProps {
   /** Painel lateral: título, texto e conteúdo livre da página. */
@@ -33,8 +35,9 @@ export function AuthLayout({
       </a>
       <aside className="auth-aside">
         <div className="auth-aside-glow" aria-hidden="true" />
+        <AnimatedBackground />
         <div style={{ position: 'relative' }}>
-          <Logo onDark />
+          <Logo onDark asLink={false} />
         </div>
 
         <div
@@ -62,6 +65,9 @@ export function AuthLayout({
       </aside>
 
       <main className="auth-main" id="formulario">
+        <div className="auth-theme-toggle">
+          <ThemeToggle />
+        </div>
         <div className="auth-form-wrap">
           <Link to="/" className="auth-back">
             <Icon name="arrow-left" size={16} />

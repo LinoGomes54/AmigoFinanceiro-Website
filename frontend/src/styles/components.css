@@ -1185,10 +1185,17 @@ section[id] {
 }
 
 .auth-main {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--space-10) var(--space-6);
+}
+
+.auth-theme-toggle {
+  position: absolute;
+  top: var(--space-5);
+  right: var(--space-5);
 }
 
 .auth-form-wrap {
