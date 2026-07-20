@@ -399,22 +399,60 @@ section[id] {
   gap: var(--space-2);
 }
 
+/* No header, o logo usa o mesmo hover dos links do menu: sublinhado que cresce do
+   centro, em vez do realce de fundo padrão do logo. */
+.header .logo {
+  position: relative;
+}
+
+.header .logo:hover {
+  background: transparent;
+}
+
+.header .logo:hover .logo-mark {
+  box-shadow: 0 0 0 0 transparent;
+}
+
+.header .logo::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  border-radius: var(--radius-full);
+  background: var(--brand);
+  transform: translateX(-50%);
+  transition: width var(--duration-base) var(--ease-out);
+}
+
+.header .logo:hover::after {
+  width: calc(100% - var(--space-4));
+}
+
 /* ================= LOGO ================= */
 
 .logo {
   display: inline-flex;
   align-items: center;
   gap: var(--space-3);
+  /* Padding compensado por margem negativa: o realce de seleção não empurra o layout. */
+  padding: var(--space-1) var(--space-2);
+  margin-inline: calc(var(--space-2) * -1);
   font-family: var(--font-display);
   font-size: var(--text-md);
   font-weight: var(--weight-bold);
   letter-spacing: var(--tracking-snug);
   color: var(--text);
   flex: none;
+  border-radius: var(--radius-md);
+  transition: background-color var(--duration-fast) var(--ease-out);
 }
 
+/* Hover de seleção: um realce suave atrás do logo e um anel no ícone, sem movimento. */
 .logo:hover {
   color: var(--text);
+  background: var(--surface-2);
 }
 
 .logo-mark {
@@ -428,16 +466,35 @@ section[id] {
   color: #fff;
   font-size: var(--text-md);
   font-weight: var(--weight-bold);
-  transition: transform var(--duration-base) var(--ease-spring);
+  box-shadow: 0 0 0 0 transparent;
+  transition: box-shadow var(--duration-base) var(--ease-out);
 }
 
 .logo:hover .logo-mark {
-  transform: rotate(-6deg) scale(1.06);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 30%, transparent);
 }
 
 .logo--on-dark,
 .logo--on-dark:hover {
   color: var(--dark-text);
+}
+
+/* Sobre fundo escuro, o realce é um véu claro translúcido. */
+.logo--on-dark:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Logo estático (telas de autenticação): rótulo, não link — sem hover nem cursor. */
+.logo--static {
+  cursor: default;
+}
+
+.logo--static:hover {
+  background: transparent;
+}
+
+.logo--static:hover .logo-mark {
+  box-shadow: 0 0 0 0 transparent;
 }
 
 /* ================= ALTERNADOR DE TEMA ================= */
