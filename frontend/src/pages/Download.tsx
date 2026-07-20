@@ -101,7 +101,7 @@ export function Download() {
       <a href="#conteudo" className="skip-link">
         Pular para o conteúdo
       </a>
-      <SiteHeader anchorPrefix="/" />
+      <SiteHeader />
 
       <main id="conteudo">
         {/* ---------------- HERO ---------------- */}

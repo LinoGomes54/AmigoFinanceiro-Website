@@ -17,6 +17,11 @@
   padding-block: var(--space-24);
 }
 
+/* Ao rolar via link do menu, a seção para abaixo do header fixo em vez de encostar no topo. */
+section[id] {
+  scroll-margin-top: calc(var(--header-h) + var(--space-4));
+}
+
 .section--tight {
   padding-block: var(--space-16);
 }

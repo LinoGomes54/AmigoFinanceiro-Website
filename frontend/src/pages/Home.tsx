@@ -14,6 +14,7 @@ import { Planos, type PlanosMode } from '../components/Planos.tsx';
 import { SiteHeader } from '../components/SiteHeader.tsx';
 import { LinkButton } from '../components/ui/Button.tsx';
 import { Reveal } from '../components/ui/Reveal.tsx';
+import { useScrollToHash } from '../hooks/useScrollToHash.ts';
 
 const DESTAQUES = [
   ['100% manual', 'Você decide o que entra. Zero conexão com banco.'],
@@ -75,6 +76,7 @@ const PASSOS_CONTA = [
 export function Home() {
   const [modoPlanos, setModoPlanos] = useState<PlanosMode>('cards');
   const [lightbox, setLightbox] = useState<string | null>(null);
+  useScrollToHash();
 
   return (
     <>
